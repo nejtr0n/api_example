@@ -36,9 +36,24 @@ mocks:
 test:
 	@docker-compose exec -u $(uid):$(gid) -w /app/src -e CGO_ENABLED=0 -e GOCACHE=/go/.cache builder sh -c 'go clean -testcache && go test `go list ./... | grep -v /vendor/`'
 
-all: di proto mocks test
-
 server:
-	@docker-compose exec -u $(uid):$(gid) -w /app/src -e CGO_ENABLED=0 -e GOOS=linux -e GOCACHE=/go/.cache builder sh -c 'go build -a \
-          -ldflags '-X main.version=${APP_VERSION} -X main.revision=${APP_REVISION} -s -w -extldflags "-static"' \
-          -installsuffix cgo -o bin/application cmd/main.go cmd/wire_gen.go'
+	@docker-compose exec -u $(uid):$(gid) -w /app/src -e CGO_ENABLED=0 -e GOOS=linux -e GOCACHE=/go/.cache builder sh -c "go build -a \
+-ldflags '-X main.version=${APP_VERSION} -X main.revision=${APP_REVISION} -s -w -extldflags "-static"' \
+-installsuffix cgo -o bin/server cmd/server/main.go cmd/server/wire_gen.go"
+	@echo "Server client builded successfully"
+
+fetch_client:
+	@docker-compose exec -u $(uid):$(gid) -w /app/src -e CGO_ENABLED=0 -e GOOS=linux -e GOCACHE=/go/.cache builder sh -c "go build -a \
+-ldflags '-X main.version=${APP_VERSION} -X main.revision=${APP_REVISION} -s -w -extldflags "-static"' \
+-installsuffix cgo -o bin/fetch_client cmd/fetch_client/main.go"
+	@echo "Fetch client builded successfully"
+
+list_client:
+	@docker-compose exec -u $(uid):$(gid) -w /app/src -e CGO_ENABLED=0 -e GOOS=linux -e GOCACHE=/go/.cache builder sh -c "go build -a \
+-ldflags '-X main.version=${APP_VERSION} -X main.revision=${APP_REVISION} -s -w -extldflags "-static"' \
+-installsuffix cgo -o bin/list_client cmd/list_client/main.go"
+	@echo "List client builded successfully"
+
+clients: fetch_client list_client
+
+all: di proto mocks test clients

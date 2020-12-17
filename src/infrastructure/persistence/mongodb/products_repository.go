@@ -93,6 +93,6 @@ func (p productsRepository) collectionBulkInsert(ctx context.Context, operations
 	if err != nil {
 		return -1, err
 	}
-	return  res.ModifiedCount, nil
+	return  res.ModifiedCount + res.UpsertedCount, nil
 }
 

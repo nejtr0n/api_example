@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	api_example "github.com/nejtr0n/api_example/ui/grpc"
 	"github.com/urfave/cli/v2"
@@ -22,6 +23,12 @@ func main()  {
 				Usage:   "Bind address for grpc endpoint",
 				Required: true,
 			},
+			&cli.StringFlag{
+				Name:    "fetch_file",
+				Value:   "http://localhost:8080/test_1.csv",
+				Usage:   "file to parse",
+				Required: true,
+			},
 		},
 		Authors: []*cli.Author{
 			{
@@ -40,13 +47,18 @@ func main()  {
 			defer conn.Close()
 			client := api_example.NewApiExampleClient(conn)
 			request := &api_example.FetchRequest{
-				Url:                  "http://localhost:8080/test_1.csv",
+				Url: config.String("fetch_file"),
 			}
 			response, err := client.Fetch(context.Background(), request)
 			if err != nil {
 				return err
 			}
-			fmt.Println(response)
+			j, err := json.MarshalIndent(response, "", "\t")
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(string(j))
 			return nil
 		},
 	}

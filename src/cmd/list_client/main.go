@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	api_example "github.com/nejtr0n/api_example/ui/grpc"
 	"github.com/urfave/cli/v2"
@@ -20,6 +21,30 @@ func main()  {
 				Name:    "fetch_address",
 				Value:   "127.0.0.1:6000",
 				Usage:   "Bind address for grpc endpoint",
+				Required: true,
+			},
+			&cli.Int64Flag{
+				Name:    "offset",
+				Value:   0,
+				Usage:   "products offset",
+				Required: true,
+			},
+			&cli.Int64Flag{
+				Name:    "limit",
+				Value:   1,
+				Usage:   "products limit",
+				Required: true,
+			},
+			&cli.Int64Flag{
+				Name:    "field",
+				Value:   0,
+				Usage:   "products sorting field",
+				Required: true,
+			},
+			&cli.Int64Flag{
+				Name:    "sort",
+				Value:   1,
+				Usage:   "products sorting order",
 				Required: true,
 			},
 		},
@@ -41,19 +66,24 @@ func main()  {
 			client := api_example.NewApiExampleClient(conn)
 			request := &api_example.ListRequest{
 				Pagination:           &api_example.PagingParams{
-					Offset:               0,
-					Limit:                1,
+					Offset:               config.Int64("offset"),
+					Limit:                config.Int64("limit"),
 				},
 				Sorting:              &api_example.SortingParams{
-					Field:                3,
-					Sort:                 -1,
+					Field:                api_example.SortingParams_Fields(config.Int64("field")),
+					Sort:                 api_example.SortingParams_Sorts(config.Int64("sort")),
 				},
 			}
 			response, err := client.List(context.Background(), request)
 			if err != nil {
 				return err
 			}
-			fmt.Println(response)
+			j, err := json.MarshalIndent(response, "", "\t")
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(string(j))
 			return nil
 		},
 	}
