@@ -13,11 +13,6 @@ execute tests
 make test
 ```
 
-convey report exposed at
-```
-
-```
-
 ### Testing fetch csv
 execute command
 ```
