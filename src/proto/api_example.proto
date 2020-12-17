@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+service ApiExample {
+    rpc Fetch(FetchRequest) returns (FetchResponse) {}
+    rpc List(ListRequest) returns (ListResponse) {}
+}
+
+message FetchRequest {
+    string url = 1;
+}
+
+message FetchResponse {
+    int64 fetchedCount = 1;
+}
+
+message ListRequest {
+    PagingParams pagination = 1;
+    SortingParams sorting = 2;
+}
+
+message PagingParams {
+    int64 offset = 1;
+    int64 limit = 2;
+}
+
+message SortingParams {
+    enum Fields {
+        _id = 0;
+        name = 1;
+        price = 2;
+        counter = 3;
+        lastModified = 4;
+    }
+    Fields field = 1;
+    enum Sorts {
+        NONE = 0;
+        ASC = 1;
+        DESC = -1;
+    }
+    Sorts sort = 2;
+}
+
+message ListResponse {
+    repeated Product items = 1;
+}
+
+message Product {
+    string id = 1;
+    string name = 2;
+}

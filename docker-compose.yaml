@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  builder:
+    build: ./infra/builder
+    user: "${UID}:${GID}"
+    volumes:
+    - ./:/app
+    - ./.cache:/go/.cache
+    ports:
+      - 8000:8080
+    environment:
+      CGO_ENABLED: 0
+
+  testData:
+    image: nginx
+    volumes:
+      - ./test_data:/usr/share/nginx/html
+    ports:
+      - 8080:80
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${APP_MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${APP_MONGO_PASS}
