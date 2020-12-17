@@ -26,7 +26,7 @@ di:
 	@echo "Generated di container"
 
 proto:
-	@docker-compose exec -u $(uid):$(gid) -e CGO_ENABLED=0 -e GOCACHE=/go/.cache builder protoc -I /app/src/proto --gofast_out=plugins=grpc:/app/src/ui/grpc api_example.proto
+	@docker-compose exec -u $(uid):$(gid) -e CGO_ENABLED=0 -e GOCACHE=/go/.cache builder protoc -I /app/src/proto --gofast_out=plugins=grpc,Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:/app/src/ui/grpc api_example.proto
 	@echo "Generated protobuf"
 
 mocks:

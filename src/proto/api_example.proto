@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 service ApiExample {
     rpc Fetch(FetchRequest) returns (FetchResponse) {}
     rpc List(ListRequest) returns (ListResponse) {}
@@ -47,4 +49,7 @@ message ListResponse {
 message Product {
     string id = 1;
     string name = 2;
+    double price = 3;
+    int64 counter = 4;
+    google.protobuf.Timestamp lastModified = 5;
 }
